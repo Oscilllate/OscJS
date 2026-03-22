@@ -276,3 +276,11 @@ const ctxmenu = (() => {
 })();
 PTT(Element,"ctxmenu",function(options){ ctxmenu(this, options); });
 
+PTT(Function, "debounce", function(delay = 300) {
+  let timeoutId;
+  const func = this; // reference the original function
+  return function(...args) {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => func.apply(this, args), delay);
+  };
+});
