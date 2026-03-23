@@ -120,6 +120,7 @@ function PTT(forKind = Object, methodName, method, { getter = false } = {}) {
   if (getter) Object.defineProperty(proto, methodName, { get() { return method.call(this); }, configurable: true, enumerable: false });
   else proto[methodName] = method;
 }
+PTT(Object, "PTT", function(methodName, method, options) { PTT(this, methodName, method, options); });
 
 const ctxmenu = (() => {
 	let currentMenu = null;
@@ -274,13 +275,24 @@ const ctxmenu = (() => {
 		});
 	};
 })();
-PTT(Element,"ctxmenu",function(options){ ctxmenu(this, options); });
+Element.PTT("ctxmenu",function(options){ ctxmenu(this, options); });
 
-PTT(Function, "debounce", function(delay = 300) {
+Function.PTT("debounce", function(delay = 300) {
   let timeoutId;
   const func = this; // reference the original function
   return function(...args) {
     clearTimeout(timeoutId);
     timeoutId = setTimeout(() => func.apply(this, args), delay);
   };
+});
+
+function range(from = 0, to = 10) {
+    return Array.from({ length: to - from }, (_, i) => i + from);
+}
+
+Math.clamp = function(value, min, max) {
+    return Math.min(Math.max(value, min), max);
+}
+Array.PTT("unique", function() {
+    return [...new Set(this)];
 });
