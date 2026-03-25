@@ -1,4 +1,4 @@
-# AxiomJS
+# OscJS
 
 A lightweight JavaScript utility library providing:
 
@@ -14,12 +14,12 @@ A lightweight JavaScript utility library providing:
 Clone the repository:
 
 ```bash
-git clone https://github.com/Oscilllate/AxiomJS.git
-cd AxiomJS
+git clone https://github.com/Oscilllate/OscJS.git
+cd OscJS
 ```
-Include `axiom.js` in your project:
+Include `osc.js` in your project:
 ```html
-<script src="./javascript/axiom.js"></script>
+<script src="./javascript/osc.js"></script>
 ```
 
 ## Contributing
