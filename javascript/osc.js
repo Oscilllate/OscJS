@@ -95,6 +95,7 @@ cs.clear = () => csStyleEnabled = false;
 cs.apply = () => csStyleEnabled = true;
 //#endregion
 
+// ===== General Functions =====
 function el(type = "span", attrs = {}) {
   const element = document.createElement(type);
   for (const [key, value] of Object.entries(attrs)) {
@@ -121,7 +122,21 @@ function PTT(forKind = Object, methodName, method, { getter = false } = {}) {
   else proto[methodName] = method;
 }
 PTT(Object, "PTT", function(methodName, method, options) { PTT(this, methodName, method, options); });
-
+function waitFor(conditionFn, { interval = 100, timeout = 5000 } = {}) {
+    return new Promise ((resolve, reject) => {
+        const startTime = Date.now();
+        const check = () => {
+            try {
+                if (conditionFn()) resolve();
+                else if (Date.now() - startTime >= timeout) reject(new Error(`waitFor: condition took too long to respond (${timeout}ms)`));
+                else setTimeout(check, interval);
+            } catch (err) {
+                reject(err);
+            }
+        }
+        check();
+    });
+}
 const ctxmenu = (() => {
 	let currentMenu = null;
 	// Global close handler
@@ -277,6 +292,7 @@ const ctxmenu = (() => {
 })();
 Element.PTT("ctxmenu",function(options){ ctxmenu(this, options); });
 
+// ===== Function Extensions =====
 Function.PTT("debounce", function(delay = 300) {
   let timeoutId;
   const func = this; // reference the original function
@@ -286,14 +302,35 @@ Function.PTT("debounce", function(delay = 300) {
   };
 });
 
+// ===== Math Extensions =====
 function range(from = 0, to = 10) {
     return Array.from({ length: to - from }, (_, i) => i + from);
 }
-
 Math.clamp = function(value, min, max) {
     return Math.min(Math.max(value, min), max);
 }
+
+// ===== Array Extensions =====
 Array.PTT("unique", function() {
     return [...new Set(this)];
 });
-
+Array.PTT("chunk", function(size) {
+    if (size <= 0) throw new RangeError("Chunk size must be greater than 0");
+    let result = [];
+    for (let i = 0; i < this.length; i += size) {
+        result.push(this.slice(i, i + size));
+    }
+    return result;
+});
+Array.PTT("flatten", function(depth = 1) {
+    if (depth < 1) return this.slice();
+    let result = [];
+    for (const item of this) {
+        if (Array.isArray(item)) {
+            result.push(...item.flatten(depth - 1));
+        } else {
+            result.push(item);
+        }
+    }
+    return result;
+});
